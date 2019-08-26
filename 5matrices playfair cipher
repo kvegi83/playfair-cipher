@@ -1,0 +1,135 @@
+def d_c(row1,col1,row2,col2,key):
+  if(row1==row2):
+    c1=m[key][row1][(col1-1)%5]
+    c2=m[key][row2][(col2-1)%5]
+    return c1+c2
+  elif(col1==col2):
+    c1=m[key][(row1-1)%5][col1]
+    c2=m[key][(row2-1)%5][col2]
+    return c1+c2
+  else:
+    c1=m[key][row1][col2]
+    c2=m[key][row2][col1]
+    return c1+c2  
+
+def c_p(row1,col1,row2,col2,key):
+  if(row1==row2):
+    c1=m[key][row1][(col1+1)%5]
+    c2=m[key][row2][(col2+1)%5]
+    return c1+c2
+  elif(col1==col2):
+    c1=m[key][(row1+1)%5][col1]
+    c2=m[key][(row2+1)%5][col2]
+    return c1+c2
+  else:
+    c1=m[key][row1][col2]
+    c2=m[key][row2][col1]
+    return c1+c2  
+
+def generate_matrix(ip):
+  keyword1=ip.replace("J","I")
+  keyword=[]
+  for i in keyword1:
+    if(i not in keyword):
+      keyword.append(i)
+  alphabets=[chr(i) for i in range(65,91) if   chr(i) not in keyword]
+  alphabets.remove("J")
+  l=len(keyword)
+  t=0
+  p=0
+  matrix=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+  for i in range(5):
+    for j in range(5):
+      if(t==0):
+        matrix[i][j]=keyword[t]
+        t+=1
+      elif((t<l)and (keyword[t] not in  keyword[t-1::-1])):
+        matrix[i][j]=keyword[t]
+        t+=1
+      else:
+        if(t==l):
+          matrix[i][j]=alphabets[p]
+          p+=1
+  return matrix
+m=[0,0,0,0,0,0]
+for i in range(6):
+  key=input()
+  m[i]=generate_matrix(key)
+  #print(m[i])
+plain_text=input().replace("J","I").replace(" ","")
+#print(plain_text)
+dia_graph=[]
+s=""
+i=0
+while(i<(len(plain_text))):
+  if(i+1<len(plain_text) and plain_text[i]!=plain_text[i+1]):
+    s=plain_text[i]+plain_text[i+1]
+    dia_graph.append(s)
+    i=i+2
+  elif(i+1<len(plain_text) and plain_text[i]==plain_text[i+1]):
+    s=plain_text[i]+"X"
+    dia_graph.append(s)
+    i+=1
+  else:
+    if(i+1==len(plain_text)):
+      s=plain_text[i]+"X"
+      dia_graph.append(s) 
+      i+=1
+#print(dia_graph)
+key=0
+cipher=[]
+for i in dia_graph:
+  key=key%6
+  c1=i[0]
+  c2=i[1]
+  col1=0
+  col2=0
+  row1=0
+  row2=0
+  ci=""
+  for j in m[key]:
+    if c1 in j:
+      col1=j.index(c1)
+      row1=m[key].index(j)
+      #print(row1,col1)
+      break 
+  for j in m[key]:
+    if c2 in j:
+      col2=j.index(c2)
+      row2=m[key].index(j)
+      #print(row2,col2)
+      break
+  ci=c_p(row1,col1,row2,col2,key)
+  cipher.append(ci)
+  key+=1  
+print(cipher)
+
+key=0
+decipher=[]
+for i in cipher:
+  key=key%6
+  c1=i[0]
+  c2=i[1]
+  col1=0
+  col2=0
+  row1=0
+  row2=0
+  de=""
+  for j in m[key]:
+    if c1 in j:
+      col1=j.index(c1)
+      row1=m[key].index(j)
+      #print(row1,col1)
+      break 
+  for j in m[key]:
+    if c2 in j:
+      col2=j.index(c2)
+      row2=m[key].index(j)
+      #print(row2,col2)
+      break
+  de=d_c(row1,col1,row2,col2,key)
+  decipher.append(de)
+  key+=1  
+print(decipher)
+     
+    
